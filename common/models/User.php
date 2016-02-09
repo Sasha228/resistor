@@ -24,7 +24,10 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
+    const STATUS_BANNED = 1;
     const STATUS_ACTIVE = 10;
+
+    public $password = '';
 
     /**
      * @inheritdoc
@@ -50,8 +53,22 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            [['username', 'email'], 'required'],
+            [['username'], 'unique'],
+            [['email'], 'unique'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['email','email'],
+            ['password', 'string', 'min' => 6],
+        ];
+    }
+
+    public static function getStatus()
+    {
+        return [
+            self::STATUS_DELETED => 'Deleted',
+            self::STATUS_BANNED => 'Banned',
+            self::STATUS_ACTIVE => 'Acvive',
         ];
     }
 
